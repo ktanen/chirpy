@@ -8,8 +8,8 @@ const app = express();
 const PORT = 8080;
 
 app.use("/app", middlewareMetricsInc);
-app.use("/api/metrics", middlewareMetricsWrite);
-app.use("/api/reset", middlewareMetricsReset );
+app.use("/admin/metrics", middlewareMetricsWrite);
+app.use("/admin/reset", middlewareMetricsReset );
 app.use("/app", express.static("./src/app"));
 
 app.use(middlewareLogResponses);

@@ -20,7 +20,13 @@ export function middlewareMetricsInc(req: Request, res: Response, next: NextFunc
 }
 
 export function middlewareMetricsWrite(req: Request, res: Response, next: NextFunction) {
-    res.send(`Hits: ${config.fileserverHits}`);
+    res.set("Content-Type", "text/html; charset=utf-8");
+    res.send(`<html>
+  <body>
+    <h1>Welcome, Chirpy Admin</h1>
+    <p>Chirpy has been visited ${config.fileserverHits} times!</p>
+  </body>
+</html>`);
 }
 
 export function middlewareMetricsReset(req: Request, res: Response, next: NextFunction) {
