@@ -9,7 +9,7 @@ const PORT = 8080;
 
 app.use("/app", middlewareMetricsInc);
 app.use("/admin/metrics", middlewareMetricsWrite);
-app.use("/admin/reset", middlewareMetricsReset );
+app.post("/admin/reset", middlewareMetricsReset );
 app.use("/app", express.static("./src/app"));
 
 app.use(middlewareLogResponses);
