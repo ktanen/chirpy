@@ -1,5 +1,6 @@
 import {Request, Response} from "express"
 import { respondWithJSON, respondWithError } from "./json.js"
+import { setUncaughtExceptionCaptureCallback } from "node:process";
 
 
 export async function handlerChirpsValidate(req: Request, res: Response) {
@@ -17,9 +18,26 @@ export async function handlerChirpsValidate(req: Request, res: Response) {
     if (chirpLength > 140) {
         respondWithError(res, 400, "Chirp is too long");
     } else {
-        const validPayload = {"valid": true};
+        const bannedWords: string[] = ["kerfuffle", "sharbert", "fornax"];
 
-        respondWithJSON(res, 200, validPayload);
+        const words = params.body.split(" ");
+
+        for (let i = 0; i < words.length; i++) {
+            if (bannedWords.includes(words[i].toLowerCase())) {
+                words[i] = "****";
+            }
+        }
+
+        const cleanedBody = words.join(" ");
+
+        const cleanedPayload = {
+            "cleanedBody": cleanedBody
+        };
+
+        respondWithJSON(res, 200, cleanedPayload);
+        
+
+
     }
 
 
