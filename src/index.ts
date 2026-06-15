@@ -8,7 +8,7 @@ import { allowedNodeEnvironmentFlags } from "node:process";
 
 const app = express();
 const PORT = 8080;
-
+app.use(express.json());
 app.use("/app", middlewareMetricsInc);
 app.use("/admin/metrics", middlewareMetricsWrite);
 app.post("/admin/reset", middlewareMetricsReset );
