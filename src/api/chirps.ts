@@ -1,6 +1,6 @@
 import {Request, Response} from "express"
 import { respondWithJSON, respondWithError } from "./json.js"
-
+import { BadRequestError } from "./errorHandling.js";
 
 
 export async function handlerChirpsValidate(req: Request, res: Response) {
@@ -16,7 +16,7 @@ export async function handlerChirpsValidate(req: Request, res: Response) {
     const chirpLength: number = params.body.length;
     
     if (chirpLength > 140) {
-        throw new Error("Chirp is too long");
+        throw new BadRequestError("Chirp is too long. Max length is 140");
     } else {
         const bannedWords: string[] = ["kerfuffle", "sharbert", "fornax"];
 
