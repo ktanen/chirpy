@@ -2,6 +2,7 @@ import {Request, Response, NextFunction } from "express"
 import { config } from "../config.js";
 import { ForbiddenError } from "./errorHandling.js";
 import { deleteAllUsers } from "../db/queries/users.js";
+import { deleteAllChirps } from "../db/queries/chirps.js";
 
 export function middlewareLogResponses(req: Request, res: Response, next: NextFunction) {
     res.on("finish", () => {
@@ -38,5 +39,6 @@ export async function middlewareMetricsReset(req: Request, res: Response, next: 
 
     config.api.fileserverHits = 0;
     await deleteAllUsers();
+    await deleteAllChirps();
     res.status(200).send("Hits reset to 0");
 }
