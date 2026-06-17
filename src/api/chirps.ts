@@ -1,12 +1,13 @@
 import {Request, Response} from "express"
-import { respondWithJSON, respondWithError } from "./json.js"
+import { respondWithJSON } from "./json.js"
 import { BadRequestError } from "./errorHandling.js";
+import { insertChirp } from "../db/queries/chirps.js";
 
-
-export async function handlerChirpsValidate(req: Request, res: Response) {
+export async function handlerCreateChirp(req: Request, res: Response) {
 
     type parameters = {
         body: string;
+        userId: string;
     };
 
 
@@ -31,10 +32,15 @@ export async function handlerChirpsValidate(req: Request, res: Response) {
         const cleanedBody = words.join(" ");
 
         const cleanedPayload = {
-            "cleanedBody": cleanedBody
+            "body": cleanedBody,
+            "userId": params.userId,
         };
 
-        respondWithJSON(res, 200, cleanedPayload);
+        const chirp = await insertChirp(cleanedPayload);
+
+        respondWithJSON(res, 201, chirp);
+
+       
         
 
 
