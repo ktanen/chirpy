@@ -1,5 +1,7 @@
 import {Request, Response, NextFunction } from "express"
 import { config } from "../config.js";
+import { ForbiddenError } from "./errorHandling.js";
+import { deleteAllUsers } from "../db/queries/users.js";
 
 export function middlewareLogResponses(req: Request, res: Response, next: NextFunction) {
     res.on("finish", () => {
@@ -29,7 +31,12 @@ export function middlewareMetricsWrite(req: Request, res: Response, next: NextFu
 </html>`);
 }
 
-export function middlewareMetricsReset(req: Request, res: Response, next: NextFunction) {
+export async function middlewareMetricsReset(req: Request, res: Response, next: NextFunction) {
+  if (config.api.platform !== "dev") {
+    throw new ForbiddenError("Reset is only allowed in dev environment")
+  }
+
     config.api.fileserverHits = 0;
-    res.send("done");
+    await deleteAllUsers();
+    res.status(200).send("Hits reset to 0");
 }

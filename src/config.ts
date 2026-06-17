@@ -9,6 +9,7 @@ process.loadEnvFile();
 
 type APIConfig = {
   fileserverHits: number;
+  platform: string;
 };
 
 type DBConfig = {
@@ -31,6 +32,7 @@ function envOrThrow(key: string): string {
 
 const api: APIConfig = {
   fileserverHits: 0,
+  platform: envOrThrow("PLATFORM"),
 };
 
 const db: DBConfig = {
