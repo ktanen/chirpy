@@ -15,7 +15,7 @@ export function middlewareLogResponses(req: Request, res: Response, next: NextFu
 }
 
 export function middlewareMetricsInc(req: Request, res: Response, next: NextFunction) {
-  config.fileserverHits += 1;
+  config.api.fileserverHits += 1;
   next();
 }
 
@@ -24,12 +24,12 @@ export function middlewareMetricsWrite(req: Request, res: Response, next: NextFu
     res.send(`<html>
   <body>
     <h1>Welcome, Chirpy Admin</h1>
-    <p>Chirpy has been visited ${config.fileserverHits} times!</p>
+    <p>Chirpy has been visited ${config.api.fileserverHits} times!</p>
   </body>
 </html>`);
 }
 
 export function middlewareMetricsReset(req: Request, res: Response, next: NextFunction) {
-    config.fileserverHits = 0;
+    config.api.fileserverHits = 0;
     res.send("done");
 }
