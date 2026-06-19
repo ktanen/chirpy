@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { makeJWT, validateJWT } from "./auth.js";
+import { makeJWT, validateJWT, getBearerToken } from "./auth.js";
+import { Request } from "express";
 
 describe("JWTs", () => {
   it("creates a token that validates", () => {
@@ -50,4 +51,39 @@ describe("JWTs", () => {
     }).toThrow();
 
   });
+});
+
+
+describe("Bearer Token", () => {
+    it("Correctly gets the token string from the header", () => {
+        const fakeRequest = {
+            get: (header: string) => "Bearer tokenString"
+        } as unknown as Request;
+
+        const token = getBearerToken(fakeRequest);
+
+        expect(token).toBe("tokenString");
+    });
+
+    it("Throws an error when the token value is undefined", () => {
+        const fakeRequest = {
+            get: (header: string) => undefined
+        } as unknown as Request;
+
+        expect(() => {
+            getBearerToken(fakeRequest);
+        }).toThrow();
+        
+    });
+
+    it("Throws an error when the authorization header is malformed", () => {
+        const fakeRequest = {
+            get: (header: string) => "Test tokenString"
+        } as unknown as Request;
+
+        expect(() => {
+            getBearerToken(fakeRequest);
+        }).toThrow();
+    });
+
 });

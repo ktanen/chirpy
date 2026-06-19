@@ -10,6 +10,7 @@ process.loadEnvFile();
 type APIConfig = {
   fileserverHits: number;
   platform: string;
+  secret: string;
 };
 
 type DBConfig = {
@@ -33,6 +34,7 @@ function envOrThrow(key: string): string {
 const api: APIConfig = {
   fileserverHits: 0,
   platform: envOrThrow("PLATFORM"),
+  secret: envOrThrow("JWT_SECRET"),
 };
 
 const db: DBConfig = {

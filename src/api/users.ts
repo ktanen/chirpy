@@ -2,7 +2,8 @@ import {Request, Response} from "express"
 import { respondWithJSON, respondWithError } from "./json.js"
 import { NewUser } from "../db/schema.js"
 import { createUser, getUserByEmail } from "../db/queries/users.js"
-import { hashPassword, checkPasswordHash } from "../auth.js"
+import { hashPassword, checkPasswordHash, makeJWT } from "../auth.js"
+import { config } from "../config.js"
 export async function handlerCreateUser(req: Request, res: Response) {
     type parameters = {
         email: string;
@@ -37,11 +38,21 @@ export async function handlerLoginUser(req: Request, res: Response) {
     type parameters = {
         password: string;
         email: string;
+        expiresInSeconds?: number;
     }
     const params: parameters = req.body;
     
     const email: string = params.email;
     const password = params.password;
+    let expiresInSeconds = params.expiresInSeconds;
+
+    if (expiresInSeconds === undefined) {
+        expiresInSeconds = 3600;
+    } else if (expiresInSeconds > 3600) {
+        expiresInSeconds = 3600;
+    }
+
+
 
 
 
@@ -51,13 +62,21 @@ export async function handlerLoginUser(req: Request, res: Response) {
         const passwordIsCorrect = await checkPasswordHash(password, hashedPassword);
 
         if (! passwordIsCorrect) {
-            respondWithError(res, 401, "incorrect email or password")
+            respondWithError(res, 401, "incorrect email or password");
             return;
         }
 
-        respondWithJSON(res, 200, userResponse);
+        const token = makeJWT(user.id, expiresInSeconds, config.api.secret);
+
+        const responseBody = {
+            ...userResponse,
+            token: token
+        };
+        
+
+        respondWithJSON(res, 200, responseBody);
     } catch (error) {
-        respondWithError(res, 401, "incorrect email or password")
+        respondWithError(res, 401, "incorrect email or password");
     }
 
 

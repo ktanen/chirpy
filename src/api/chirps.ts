@@ -2,12 +2,12 @@ import {Request, Response} from "express"
 import { respondWithJSON } from "./json.js"
 import { BadRequestError, NotFoundError } from "./errorHandling.js";
 import { insertChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
-
+import { getBearerToken, validateJWT } from "../auth.js";
+import { config } from "../config.js";
 export async function handlerCreateChirp(req: Request, res: Response) {
 
     type parameters = {
         body: string;
-        userId: string;
     };
 
 
@@ -31,9 +31,12 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 
         const cleanedBody = words.join(" ");
 
+        const token = getBearerToken(req);
+        const userID = validateJWT(token, config.api.secret);
+
         const cleanedPayload = {
             "body": cleanedBody,
-            "userId": params.userId,
+            "userId": userID,
         };
 
         const chirp = await insertChirp(cleanedPayload);

@@ -1,8 +1,8 @@
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
-
-
+import {Request} from "express"
+import { UnauthorizedError } from "./api/errorHandling.js";
 export async function hashPassword(password: string): Promise<string> {
     const hashedPassword = await argon2.hash(password);
     return hashedPassword;
@@ -36,16 +36,34 @@ export function validateJWT(tokenString: string, secret: string): string {
         decoded = jwt.verify(tokenString, secret);
         
     } catch (error) {
-        throw new Error("invalid token");
+        throw new UnauthorizedError("invalid token");
     }
     if (typeof decoded === "string") {
-    throw new Error("invalid token");
+    throw new UnauthorizedError("invalid token");
     }
 
     if (typeof decoded.sub !== "string") {
-    throw new Error("invalid token");
+    throw new UnauthorizedError("invalid token");
     }
 
     return decoded.sub;
+
+}
+
+export function getBearerToken(req: Request): string {
+    let authHeaderValue;
+
+
+    authHeaderValue = req.get("Authorization");
+
+    if (!authHeaderValue) {
+        throw new Error("Undefined authorization header");
+    }
+
+    const parts = authHeaderValue.split(" ");
+    if (parts.length < 2 || parts[0] !== "Bearer") {
+        throw new Error("Malformed authorization header");
+    }
+    return parts[1];
 
 }
