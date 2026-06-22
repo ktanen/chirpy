@@ -17,11 +17,19 @@ type DBConfig = {
   url: string;
   migrationConfig: MigrationConfig
 };
+type JWTConfig = {
+  defaultDuration: number;
+  refreshDuration: number;
+};
 
 type Config = {
   api: APIConfig;
   db: DBConfig;
+  jwt: JWTConfig
 };
+
+
+
 
 function envOrThrow(key: string): string {
   const value = process.env[key];
@@ -41,12 +49,19 @@ const db: DBConfig = {
   url: envOrThrow("DB_URL"),
   migrationConfig: migrationConfig,
 }
+const oneHour = 60 * 60 * 1000;
+const sixtyDays = 60 * 24 * 60 * 60 * 1000;
 
+const jwt: JWTConfig = {
+  defaultDuration: oneHour,
+  refreshDuration: sixtyDays,
+}
 
 
 const config: Config = {
   api: api,
   db: db,
+  jwt: jwt,
 };
 
 export {config};

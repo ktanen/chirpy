@@ -1,9 +1,12 @@
 import {Request, Response} from "express"
 import { respondWithJSON, respondWithError } from "./json.js"
-import { NewUser } from "../db/schema.js"
+import { NewUser, refreshTokens } from "../db/schema.js"
 import { createUser, getUserByEmail } from "../db/queries/users.js"
 import { hashPassword, checkPasswordHash, makeJWT } from "../auth.js"
 import { config } from "../config.js"
+import { makeRefreshToken } from "../auth.js"
+import { saveRefreshToken } from "../db/queries/refresh.js"
+
 export async function handlerCreateUser(req: Request, res: Response) {
     type parameters = {
         email: string;
@@ -38,19 +41,12 @@ export async function handlerLoginUser(req: Request, res: Response) {
     type parameters = {
         password: string;
         email: string;
-        expiresInSeconds?: number;
     }
     const params: parameters = req.body;
     
     const email: string = params.email;
     const password = params.password;
-    let expiresInSeconds = params.expiresInSeconds;
 
-    if (expiresInSeconds === undefined) {
-        expiresInSeconds = 3600;
-    } else if (expiresInSeconds > 3600) {
-        expiresInSeconds = 3600;
-    }
 
 
 
@@ -66,11 +62,15 @@ export async function handlerLoginUser(req: Request, res: Response) {
             return;
         }
 
-        const token = makeJWT(user.id, expiresInSeconds, config.api.secret);
+        const token = makeJWT(user.id, config.jwt.defaultDuration, config.api.secret);
+
+        const refreshTokenString = makeRefreshToken()
+        const refreshToken = await saveRefreshToken(user.id, refreshTokenString);
 
         const responseBody = {
             ...userResponse,
-            token: token
+            token: token,
+            refreshToken: refreshTokenString
         };
         
 
