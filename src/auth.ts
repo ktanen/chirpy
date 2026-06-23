@@ -59,12 +59,12 @@ export function getBearerToken(req: Request): string {
     authHeaderValue = req.get("Authorization");
 
     if (!authHeaderValue) {
-        throw new Error("Undefined authorization header");
+        throw new UnauthorizedError("Undefined authorization header");
     }
 
     const parts = authHeaderValue.split(" ");
     if (parts.length < 2 || parts[0] !== "Bearer") {
-        throw new Error("Malformed authorization header");
+        throw new UnauthorizedError("Malformed authorization header");
     }
     return parts[1];
 
