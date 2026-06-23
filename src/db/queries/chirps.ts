@@ -30,3 +30,9 @@ export async function getChirp(chirpID: string) {
     .where(eq(chirps.id, chirpID));
     return result;
 }
+
+export async function deleteChirp(chirpID: string) {
+    await db
+    .delete(chirps)
+    .where(eq(chirps.id, chirpID));
+}

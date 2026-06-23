@@ -1,7 +1,7 @@
 import {Request, Response} from "express"
 import { respondWithJSON } from "./json.js"
-import { BadRequestError, NotFoundError } from "./errorHandling.js";
-import { insertChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
+import { BadRequestError, NotFoundError, ForbiddenError } from "./errorHandling.js";
+import { insertChirp, getAllChirps, getChirp, deleteChirp } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 export async function handlerCreateChirp(req: Request, res: Response) {
@@ -69,5 +69,35 @@ export async function handlerGetChirp(req: Request, res: Response) {
    }
 
    respondWithJSON(res, 200, chirp);
+
+}
+
+export async function handlerDeleteChirp(req: Request, res: Response) {
+    const { chirpId } = req.params;
+   if (typeof chirpId !== "string") {
+    throw new BadRequestError("ID must be a string");
+   }
+
+   const chirpToDelete = await getChirp(chirpId);
+   
+   if (!chirpToDelete) {
+    throw new NotFoundError("Chirp not found");
+   }
+    const token = getBearerToken(req);
+    const userID = validateJWT(token, config.api.secret);
+
+    const chirpUserID = chirpToDelete.userId;
+
+    if (chirpUserID !== userID) {
+        throw new ForbiddenError("You are not the author of this chirp");
+    }
+
+    await deleteChirp(chirpId)
+
+    res.status(204).send();
+
+
+
+
 
 }
