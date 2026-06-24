@@ -40,3 +40,20 @@ export async function updateEmailAndPassword(
 
   return result;
 }
+
+export async function upgradeUser(userID: string) {
+  await db
+  .update(users)
+  .set({
+    isChirpyRed: true
+  })
+  .where(eq(users.id, userID));
+}
+
+export async function getUserByID(userID: string) {
+  const [result] = await db
+  .select()
+  .from(users)
+  .where(eq(users.id, userID));
+  return result;
+}

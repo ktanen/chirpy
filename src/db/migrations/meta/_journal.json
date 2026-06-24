@@ -29,6 +29,20 @@
       "when": 1782137469917,
       "tag": "0003_illegal_tana_nile",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782239410667,
+      "tag": "0004_dear_nekra",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782239467997,
+      "tag": "0005_nasty_mach_iv",
+      "breakpoints": true
     }
   ]
 }
