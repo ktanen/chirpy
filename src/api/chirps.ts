@@ -4,6 +4,8 @@ import { BadRequestError, NotFoundError, ForbiddenError } from "./errorHandling.
 import { insertChirp, getAllChirps, getChirp, deleteChirp } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
+import { NewChirp } from "../db/schema.js";
+import { a } from "vitest/dist/chunks/suite.d.FvehnV49.js";
 export async function handlerCreateChirp(req: Request, res: Response) {
 
     type parameters = {
@@ -52,11 +54,22 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 
 export async function handlerGetAllChirps(req: Request, res: Response) {
     let authorId = undefined;
+    let sort = "asc";
     let authorIdQuery = req.query.authorId;
+    let sortQuery = req.query.sort;
+
     if (typeof authorIdQuery === "string") {
     authorId = authorIdQuery;
     }
+    if (sortQuery === "desc") {
+        sort = "desc";
+    }
+
     const chirps = await getAllChirps(authorId);
+    if (sort === "desc") {
+        chirps.sort((a, b)=>b.createdAt?.getTime()- a.createdAt?.getTime());
+    }
+
     respondWithJSON(res, 200, chirps);
 }
 
