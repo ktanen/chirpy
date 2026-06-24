@@ -1,7 +1,9 @@
 import {Request, Response} from "express"
 import { upgradeUser, getUserByID } from "../db/queries/users.js"
 import { respondWithJSON, respondWithError } from "./json.js"
-import { NotFoundError } from "./errorHandling.js";
+import { NotFoundError, UnauthorizedError } from "./errorHandling.js";
+import { config } from "../config.js";
+import { getAPIKey } from "../auth.js";
 
 export async function handlerPolkaWebhook(req: Request, res: Response) {
     type WebhookRequestParams = {
@@ -10,6 +12,15 @@ export async function handlerPolkaWebhook(req: Request, res: Response) {
             userId: string;
         };
     };
+
+    //Check API Key
+
+    const apiKey = getAPIKey(req);
+    const polkaKey = config.api.apiKey;
+
+    if (apiKey !== polkaKey) {
+        throw new UnauthorizedError("Unauthorized");
+    }
 
     const params: WebhookRequestParams = req.body;
 

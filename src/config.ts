@@ -11,6 +11,7 @@ type APIConfig = {
   fileserverHits: number;
   platform: string;
   secret: string;
+  apiKey: string;
 };
 
 type DBConfig = {
@@ -43,6 +44,7 @@ const api: APIConfig = {
   fileserverHits: 0,
   platform: envOrThrow("PLATFORM"),
   secret: envOrThrow("JWT_SECRET"),
+  apiKey: envOrThrow("POLKA_KEY"),
 };
 
 const db: DBConfig = {

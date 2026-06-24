@@ -75,3 +75,20 @@ export function makeRefreshToken(): string {
     const refreshToken = buf.toString('hex');
     return refreshToken;
 }
+
+export function getAPIKey(req: Request): string {
+    let authHeaderValue;
+
+
+    authHeaderValue = req.get("Authorization");
+
+    if (!authHeaderValue) {
+        throw new UnauthorizedError("Undefined authorization header");
+    }
+
+    const parts = authHeaderValue.split(" ");
+    if (parts.length < 2 || parts[0] !== "ApiKey") {
+        throw new UnauthorizedError("Malformed authorization header");
+    }
+    return parts[1];
+}
